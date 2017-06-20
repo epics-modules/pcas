@@ -5,10 +5,10 @@
 #     Operator of Los Alamos National Laboratory.
 # EPICS BASE Versions 3.13.7
 # and higher are distributed subject to a Software License Agreement found
-# in file LICENSE that is included with this distribution. 
+# in file LICENSE that is included with this distribution.
 #*************************************************************************
 
-TOP=../../../../../..
+TOP=../../../..
 
 include $(TOP)/configure/CONFIG
 
@@ -28,10 +28,9 @@ caDirServ_SRCS += directoryServer.cc
 
 PROD_HOST = caDirServ
 
-CLEANS += caDirServ pcaDirServ Templates.DB core 
+CLEANS += caDirServ pcaDirServ Templates.DB core
 
 include $(TOP)/configure/RULES
 
 pcaDirServ: $(PRODUCT_OBJS) $(PROD_RESS) $(PROD_DEPLIBS)
 	$(PURIFY_$(OS_CLASS)) $(LINK.cpp)
-

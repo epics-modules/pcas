@@ -5,12 +5,11 @@
 #     Operator of Los Alamos National Laboratory.
 # EPICS BASE Versions 3.13.7
 # and higher are distributed subject to a Software License Agreement found
-# in file LICENSE that is included with this distribution. 
+# in file LICENSE that is included with this distribution.
 #*************************************************************************
-TOP := ../../../../..
-CAS := $(TOP)/src/ca/legacy/pcas
+TOP := ../../..
+CAS := $(TOP)/src/pcas
 SRC := $(CAS)/generic
-CA := $(TOP)/src/ca/client
 IOSRC := $(CAS)/io/bsdSocket
 STSRC := $(SRC)/st
 
@@ -19,7 +18,6 @@ include $(TOP)/configure/CONFIG
 SRC_DIRS += $(SRC)
 SRC_DIRS += $(IOSRC)
 SRC_DIRS += $(STSRC)
-SRC_DIRS += $(CA)
 
 #USR_CXXFLAGS = $(USR_CFLAGS)
 
@@ -50,7 +48,7 @@ LIBSRCS += casMonitor.cc
 LIBSRCS += casMonEvent.cc
 LIBSRCS += inBuf.cc
 LIBSRCS += outBuf.cc
-LIBSRCS += casCtx.cc 
+LIBSRCS += casCtx.cc
 LIBSRCS += casEventMask.cc
 LIBSRCS += ioBlocked.cc
 LIBSRCS += pvExistReturn.cc
