@@ -19,6 +19,10 @@ include $(CONFIG)/CONFIG
 # Override the Base definition:
 INSTALL_LOCATION = $(TOP)
 
+# Local tools
+AITGEN = $(INSTALL_BIN)/aitGen$(HOSTEXE)
+GENAPPS = $(INSTALL_BIN)/genApps$(HOSTEXE)
+
 # CONFIG_SITE files contain other build configuration settings
 include $(TOP)/configure/CONFIG_SITE
 -include $(TOP)/configure/CONFIG_SITE.$(EPICS_HOST_ARCH).Common

@@ -4,7 +4,7 @@
 # Copyright (c) 2002 The Regents of the University of California, as
 #     Operator of Los Alamos National Laboratory.
 # EPICS BASE is distributed subject to a Software License Agreement found
-# in file LICENSE that is included with this distribution. 
+# in file LICENSE that is included with this distribution.
 #*************************************************************************
 
 TOP=../..
@@ -84,9 +84,8 @@ dbMapper$(DEP): $(COMMON_DIR)/gddApps.h
 
 # Rules for generated files
 #
-$(COMMON_DIR)/aitConvertGenerated.cc: $(EPICS_BASE_HOST_BIN)/aitGen$(HOSTEXE)
-	$(TOOLS)/aitGen$(HOSTEXE) $@
+$(COMMON_DIR)/aitConvertGenerated.cc: $(AITGEN)
+	$(AITGEN) $@
 
-$(COMMON_DIR)/gddApps.h : $(EPICS_BASE_HOST_BIN)/genApps$(HOSTEXE)
-	$(TOOLS)/genApps$(HOSTEXE) $@
-
+$(COMMON_DIR)/gddApps.h : $(GENAPPS)
+	$(GENAPPS) $@
