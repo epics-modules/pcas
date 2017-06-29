@@ -5,14 +5,14 @@
 #     Operator of Los Alamos National Laboratory.
 # EPICS BASE Versions 3.13.7
 # and higher are distributed subject to a Software License Agreement found
-# in file LICENSE that is included with this distribution. 
+# in file LICENSE that is included with this distribution.
 #*************************************************************************
 
 TOP=../../..
 
 include $(TOP)/configure/CONFIG
 
-DIRS = directoryService
+DIRS = directoryService ex
 
 include $(TOP)/configure/RULES_DIRS
 

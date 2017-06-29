@@ -1,7 +1,8 @@
 This directory contains a server tool example (which uses the
-ca server library):
+PCAS server library):
 
 directoryService - fully functional pv name resolution server
 
-The simple example that was provided here has been become the
-makeBaseApp template "caServerApp"
+The simple example that was provided here has become the
+makeBaseApp template "caServerApp". It is still being built
+in the ex directory as a verification of the template.
