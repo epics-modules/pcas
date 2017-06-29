@@ -5,7 +5,7 @@
 *     Operator of Los Alamos National Laboratory.
 * EPICS BASE Versions 3.13.7
 * and higher are distributed subject to a Software License Agreement found
-* in file LICENSE that is included with this distribution. 
+* in file LICENSE that is included with this distribution.
 \*************************************************************************/
 /*
  *      Author  Jeffrey O. Hill
@@ -16,9 +16,9 @@
 #include <stdarg.h>
 #include <stdexcept>
 
-#include "epicsGuard.h"
-#include "epicsVersion.h"
-#include "errlog.h"
+#include <epicsGuard.h>
+#include <epicsVersion.h>
+#include <errlog.h>
 
 #include "addrList.h"
 
@@ -29,11 +29,12 @@
 #include "beaconAnomalyGovernor.h"
 #include "casStreamOS.h"
 #include "casIntfOS.h"
+#include "casVersion.h"
 
 // include a version string for POSIX systems
-static const char pVersionCAS[] = 
-    "@(#) " EPICS_VERSION_STRING 
-    ", CA Portable Server Library ";
+static const char pVersionCAS[] =
+    "@(#) " CAS_VERSION_STRING " (" EPICS_VERSION_STRING ")"
+    ", CA Portable Server Library";
 
 caServerI::caServerI ( caServer & tool ) :
     adapter (tool),

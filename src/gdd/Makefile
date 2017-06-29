@@ -11,6 +11,8 @@ TOP=../..
 
 include $(TOP)/configure/CONFIG
 
+include $(TOP)/configure/CONFIG_PCAS_VERSION
+
 INC += gdd.h
 INC += gddI.h
 INC += gddContainer.h

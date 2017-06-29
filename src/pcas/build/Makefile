@@ -19,11 +19,15 @@ SRC_DIRS += $(SRC)
 SRC_DIRS += $(IOSRC)
 SRC_DIRS += $(STSRC)
 
+include $(TOP)/configure/CONFIG_PCAS_VERSION
+
 #USR_CXXFLAGS = $(USR_CFLAGS)
 
 INC += casdef.h
 INC += casEventMask.h
 INC += caNetAddr.h
+INC += casVersion.h
+INC += casVersionNum.h
 
 LIBSRCS += caServer.cc
 LIBSRCS += caServerI.cc
@@ -85,3 +89,8 @@ cas_RCS = cas.rc
 CLEANS += Templates.DB
 
 include $(TOP)/configure/RULES
+
+# Can't use EXPAND as generated headers must appear
+# in O.Common, but EXPAND emits rules for O.$(T_A)
+../O.Common/casVersionNum.h: ../casVersionNum.h@
+	$(EXPAND_TOOL) $(EXPANDFLAGS) $($@_EXPANDFLAGS) $< $@
