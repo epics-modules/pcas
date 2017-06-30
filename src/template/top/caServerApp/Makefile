@@ -19,15 +19,15 @@ PROD_LIBS += $(EPICS_BASE_HOST_LIBS)
 #
 PROD_SYS_LIBS_WIN32 += ws2_32 advapi32 user32
 
-casexample_SRCS += main.cc
-casexample_SRCS += exServer.cc
-casexample_SRCS += exPV.cc
-casexample_SRCS += exVectorPV.cc
-casexample_SRCS += exScalarPV.cc
-casexample_SRCS += exAsyncPV.cc
-casexample_SRCS += exChannel.cc
+PROD_HOST = excas
 
-PROD_HOST = casexample
+excas_SRCS += main.cc
+excas_SRCS += exServer.cc
+excas_SRCS += exPV.cc
+excas_SRCS += exVectorPV.cc
+excas_SRCS += exScalarPV.cc
+excas_SRCS += exAsyncPV.cc
+excas_SRCS += exChannel.cc
 
 include $(TOP)/configure/RULES
 

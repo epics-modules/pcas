@@ -5,7 +5,7 @@ include $(TOP)/configure/CONFIG
 TEMPLATES_DIR = makeBaseApp
 
 TEMPLATES += top/caServerApp/Makefile
-TEMPLATES += top/caServerApp/README
+TEMPLATES += top/caServerApp/excas.html
 TEMPLATES += top/caServerApp/exAsyncPV.cc
 TEMPLATES += top/caServerApp/exChannel.cc
 TEMPLATES += top/caServerApp/exPV.cc

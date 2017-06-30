@@ -22,6 +22,8 @@ PROD_SYS_LIBS_WIN32 += ws2_32 advapi32 user32
 
 PROD_HOST = excas
 
+HTMLS += excas.html
+
 excas_SRCS += main.cc
 excas_SRCS += exServer.cc
 excas_SRCS += exPV.cc
