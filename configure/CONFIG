@@ -20,8 +20,8 @@ include $(CONFIG)/CONFIG
 INSTALL_LOCATION = $(TOP)
 
 # Local tools
-AITGEN = $(INSTALL_BIN)/aitGen$(HOSTEXE)
-GENAPPS = $(INSTALL_BIN)/genApps$(HOSTEXE)
+AITGEN = $(INSTALL_HOST_BIN)/aitGen$(HOSTEXE)
+GENAPPS = $(INSTALL_HOST_BIN)/genApps$(HOSTEXE)
 
 # CONFIG_SITE files contain other build configuration settings
 include $(TOP)/configure/CONFIG_SITE
