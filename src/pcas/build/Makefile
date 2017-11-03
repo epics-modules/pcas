@@ -25,6 +25,8 @@ include $(TOP)/configure/CONFIG_PCAS_VERSION
 
 INC += casdef.h
 INC += casEventMask.h
+INC += casCtx.h
+INC += caHdrLargeArray.h
 INC += caNetAddr.h
 INC += casVersion.h
 INC += casVersionNum.h
