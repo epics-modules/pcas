@@ -11,7 +11,7 @@ TOP=../../../..
 
 include $(TOP)/configure/CONFIG
 
-PROD_LIBS += $(EPICS_BASE_HOST_LIBS) cas gdd
+PROD_LIBS += cas gdd $(EPICS_BASE_HOST_LIBS)
 
 SRC_DIRS += $(TOP)/src/template/top/caServerApp
 
