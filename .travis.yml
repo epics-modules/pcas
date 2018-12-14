@@ -1,0 +1,30 @@
+language: cpp
+compiler: gcc
+dist: trusty
+
+addons:
+  apt:
+    packages:
+    - libreadline6-dev
+    - libncurses5-dev
+    - perl
+    - clang
+    - g++-mingw-w64-i686
+    - qemu-system-x86
+
+install:
+ - ./.ci/travis-prepare.sh
+
+script:
+ - ./.ci/travis-build.sh
+
+env:
+ matrix:
+  - BRBASE=7.0
+  - BRBASE=7.0 CMPLR=clang
+  - BRBASE=7.0 EXTRA="CMD_CXXFLAGS=-std=c++11"
+  - BRBASE=7.0 CMPLR=clang EXTRA="CMD_CXXFLAGS=-std=c++11"
+  - BRBASE=7.0 WINE=32 TEST=NO STATIC=YES
+  - BRBASE=7.0 WINE=32 TEST=NO STATIC=NO
+  - BRBASE=7.0 RTEMS=4.10 TEST=NO
+  - BRBASE=7.0 RTEMS=4.9 TEST=NO
