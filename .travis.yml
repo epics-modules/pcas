@@ -13,18 +13,40 @@ addons:
     - qemu-system-x86
 
 install:
- - ./.ci/travis-prepare.sh
+  - ./.ci/travis-prepare.sh
 
 script:
- - ./.ci/travis-build.sh
+  - ./.ci/travis-build.sh
 
-env:
- matrix:
-  - BRBASE=7.0
-  - BRBASE=7.0 CMPLR=clang
-  - BRBASE=7.0 EXTRA="CMD_CXXFLAGS=-std=c++11"
-  - BRBASE=7.0 CMPLR=clang EXTRA="CMD_CXXFLAGS=-std=c++11"
-  - BRBASE=7.0 WINE=32 TEST=NO STATIC=YES
-  - BRBASE=7.0 WINE=32 TEST=NO STATIC=NO
-  - BRBASE=7.0 RTEMS=4.10 TEST=NO
-  - BRBASE=7.0 RTEMS=4.9 TEST=NO
+matrix:
+  include:
+
+  - env: BRBASE=7.0
+
+  - env: BRBASE=7.0 CMPLR=clang
+    compiler: clang
+
+  - env: BRBASE=7.0 EXTRA="CMD_CXXFLAGS=-std=c++11"
+
+  - env: BRBASE=7.0 CMPLR=clang EXTRA="CMD_CXXFLAGS=-std=c++11"
+    compiler: clang
+
+  - env: BRBASE=7.0 WINE=32 TEST=NO STATIC=YES
+    compiler: mingw
+
+  - env: BRBASE=7.0 WINE=32 TEST=NO STATIC=NO
+    compiler: mingw
+
+  - env: BRBASE=7.0 RTEMS=4.10 TEST=NO
+
+  - env: BRBASE=7.0 RTEMS=4.9 TEST=NO
+
+  - env: BRBASE=7.0 CMPLR=gcc-6
+    dist: xenial
+    compiler: gcc-6
+    addons: { apt: { packages: ["g++-6"], sources: ["ubuntu-toolchain-r-test"] } }
+
+  - env: BRBASE=7.0 CMPLR=gcc-7
+    dist: xenial
+    compiler: gcc-7
+    addons: { apt: { packages: ["g++-7"], sources: ["ubuntu-toolchain-r-test"] } }
