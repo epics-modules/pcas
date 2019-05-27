@@ -50,3 +50,7 @@ matrix:
     dist: xenial
     compiler: gcc-7
     addons: { apt: { packages: ["g++-7"], sources: ["ubuntu-toolchain-r-test"] } }
+
+  - env: BRBASE=7.0
+    os: osx
+    compiler: clang
