@@ -41,3 +41,6 @@ EPICS_BASE = /home/ralph/work/EPICS/V3/3.16
 -include $(TOP)/../RELEASE.local
 -include $(TOP)/../RELEASE.$(EPICS_HOST_ARCH).local
 -include $(TOP)/configure/RELEASE.local
+
+include $(TOP)/../../../ISIS_CONFIG
+-include $(TOP)/../../../ISIS_CONFIG.$(EPICS_HOST_ARCH)
