@@ -2,6 +2,13 @@ language: cpp
 compiler: gcc
 dist: xenial
 
+cache:
+  directories:
+  - $HOME/.cache
+
+env:
+- SETUP_PATH=.ci-local:.ci
+
 addons:
   apt:
     packages:
@@ -23,47 +30,15 @@ matrix:
 
 # Different configurations of default gcc and clang
 
-  - env: BASE=7.0
+  - env: BASE=R7.0.1
 
-  - env: BASE=7.0
+  - env: BASE=R7.0.3
     compiler: clang
 
   - env: BASE=7.0 EXTRA="CMD_CXXFLAGS=-std=c++11"
 
   - env: BASE=7.0 EXTRA="CMD_CXXFLAGS=-std=c++11"
     compiler: clang
-
-# Trusty: compiler versions very close to RHEL 7
-
-  - env: BASE=7.0
-    dist: trusty
-
-  - env: BASE=7.0 EXTRA="CMD_CXXFLAGS=-std=c++11"
-    dist: trusty
-
-# Cross-compilation to Windows using MinGW and WINE
-
-  - env: BASE=7.0 WINE=32 TEST=NO STATIC=YES
-    compiler: mingw
-
-  - env: BASE=7.0 WINE=32 TEST=NO STATIC=NO
-    compiler: mingw
-
-# Cross-compilation to RTEMS
-
-  - env: BASE=7.0 RTEMS=4.10 TEST=NO
-
-  - env: BASE=7.0 RTEMS=4.9 TEST=NO
-
-# Other gcc versions (adding as an extra package)
-
-  - env: BASE=7.0
-    compiler: gcc-6
-    addons: { apt: { packages: ["g++-6"], sources: ["ubuntu-toolchain-r-test"] } }
-
-  - env: BASE=7.0
-    compiler: gcc-7
-    addons: { apt: { packages: ["g++-7"], sources: ["ubuntu-toolchain-r-test"] } }
 
 # MacOS build
 
