@@ -18,6 +18,8 @@
 #ifndef includecasdefh
 #define includecasdefh
 
+#include <epicsVersion.h>
+
 #ifdef epicsExportSharedSymbols
 #   define epicsExportSharedSymbols_casdefh
 #   undef epicsExportSharedSymbols
@@ -26,6 +28,8 @@
 //
 // EPICS
 //
+#include <epicsTypes.h>
+
 #include "errMdef.h"            // EPICS error codes 
 #include "gdd.h"                // EPICS data descriptors 
 #include "alarm.h"              // EPICS alarm severity/condition 
@@ -428,7 +432,11 @@ public:
     // (or a derived class) each time that this routine is called
     //
     virtual casChannel * createChannel ( const casCtx &ctx,
-        const char * const pUserName, const char * const pHostName );
+        const char * const pUserName, const char * const pHostName
+#ifdef EPICS_HAS_AS_IPAG
+        ,epicsUInt32 ip_addr
+#endif
+        );
     
     //
     // tbe best type for clients to use when accessing the
@@ -577,7 +585,11 @@ public:
     // for a live connection.
     //
     virtual void setOwner ( const char * const pUserName, 
-        const char * const pHostName );
+                            const char * const pHostName
+#ifdef EPICS_HAS_AS_IPAG
+                            ,epicsUInt32 ip_addr
+#endif
+                            );
 
     //
     // the following are encouraged to change during an channel's

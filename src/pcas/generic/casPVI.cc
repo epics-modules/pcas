@@ -12,6 +12,10 @@
  *              505 665 1831
  */
 
+#include <epicsVersion.h>
+
+#include <epicsTypes.h>
+
 #include "epicsGuard.h"
 #include "gddAppTable.h" // EPICS application type table
 #include "gddApps.h"
@@ -499,11 +503,19 @@ caStatus casPVI::writeNotify ( const casCtx & ctx, const gdd & value )
 }
 
 casChannel * casPVI::createChannel ( const casCtx & ctx,
-    const char * const pUserName, const char * const pHostName )
+    const char * const pUserName, const char * const pHostName
+#ifdef EPICS_HAS_AS_IPAG
+    ,epicsUInt32 ip_addr
+#endif
+    )
 {
     epicsGuard < epicsMutex > guard ( this->mutex );
     if ( this->pPV ) {
-        return this->pPV->createChannel ( ctx, pUserName, pHostName );
+        return this->pPV->createChannel ( ctx, pUserName, pHostName
+#ifdef EPICS_HAS_AS_IPAG
+                                          ,ip_addr
+#endif
+                                        );
     }
     else {
         return 0;

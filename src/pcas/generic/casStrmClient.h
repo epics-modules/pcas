@@ -10,10 +10,14 @@
 #ifndef casStrmClienth
 #define casStrmClienth
 
+#include <epicsVersion.h>
+
 #ifdef epicsExportSharedSymbols
 #   define epicsExportSharedSymbols_casStrmClienth
 #   undef epicsExportSharedSymbols
 #endif
+
+#include <epicsTypes.h>
 
 #include "epicsTime.h"
 
@@ -61,6 +65,9 @@ private:
     caNetAddr _clientAddr;
     char * pUserName;
     char * pHostName;
+#ifdef EPICS_HAS_AS_IPAG
+    epicsUInt32 ip_addr;
+#endif
     smartGDDPointer pValueRead;
     unsigned incommingBytesToDrain;
     caStatus pendingResponseStatus;
