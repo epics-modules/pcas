@@ -151,12 +151,18 @@ casDGIntfIO::casDGIntfIO ( caServerI & serverIn, clientBufMemoryManager & memMgr
         epicsSocketDestroy (this->sock);
         throw S_cas_bindFail;
     }
-    
-    if ( addConfigBeaconAddr ) {
-        addAddrToChannelAccessAddressList (
-            & BCastAddrList, &EPICS_CAS_BEACON_ADDR_LIST, beaconPort, 0 );
+
+    if (addConfigBeaconAddr) {
+        if (envGetConfigParamPtr ( & EPICS_CAS_BEACON_ADDR_LIST ) ) {
+            addAddrToChannelAccessAddressList (
+                & BCastAddrList, & EPICS_CAS_BEACON_ADDR_LIST, beaconPort, 0 );
+        }
+        else {
+            addAddrToChannelAccessAddressList (
+                & BCastAddrList, & EPICS_CA_ADDR_LIST, beaconPort, 0 );
+        }
     }
- 
+
     removeDuplicateAddresses ( & this->beaconAddrList, & BCastAddrList, 0 );
 
     {
