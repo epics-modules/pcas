@@ -11,8 +11,18 @@
 #ifndef casDGIntfIOh
 #define casDGIntfIOh
 
+#include <epicsVersion.h>
+
 #include "casDGClient.h"
 #include "ipIgnoreEntry.h"
+
+#ifdef EPICS_HAS_CAS_IGNORE_NET_LIST
+typedef struct
+  {
+    epicsUInt32 addr;
+    epicsUInt32 mask;
+  } network_spec;
+#endif
 
 class casDGIntfIO : public casDGClient {
 public:
@@ -43,6 +53,9 @@ public:
 private:
     tsFreeList < ipIgnoreEntry, 128 > ipIgnoreEntryFreeList;
     resTable < ipIgnoreEntry, ipIgnoreEntry > ignoreTable;
+#ifdef EPICS_HAS_CAS_IGNORE_NET_LIST
+    network_spec *ignoreNets;
+#endif
 	ELLLIST beaconAddrList;
 	SOCKET sock;
 	SOCKET bcastRecvSock; // fix for solaris bug

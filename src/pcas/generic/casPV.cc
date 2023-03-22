@@ -13,7 +13,10 @@
  *              505 665 1831
  */
 
+#include <epicsVersion.h>
+
 #define epicsExportSharedSymbols
+#include <epicsTypes.h>
 #include "casPVI.h"
 
 casPV::casPV () : 
@@ -58,7 +61,11 @@ void casPV::destroy ()
 // casPV::createChannel()
 //
 casChannel *casPV::createChannel (
-    const casCtx &ctx, const char * const, const char * const )
+    const casCtx &ctx, const char * const, const char * const
+#ifdef EPICS_HAS_AS_IPAG
+    ,epicsUInt32 ip_addr
+#endif
+    )
 {
 	return new casChannel ( ctx );
 }
