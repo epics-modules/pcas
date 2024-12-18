@@ -25,14 +25,14 @@ env:
   BASE_RECURSIVE: NO
 
 jobs:
-  build-pcas:
+  native:
     name: ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
     # Set environment variables from matrix parameters
     env:
       CMP: ${{ matrix.cmp }}
       BCFG: ${{ matrix.configuration }}
-      WINE: ${{ matrix.wine }}
+      CI_CROSS_TARGETS: ${{ matrix.cross }}
       EXTRA: ${{ matrix.extra }}
       TEST: ${{ matrix.test }}
     strategy:
@@ -40,81 +40,140 @@ jobs:
       matrix:
         # Job names also name artifacts, character limitations apply
         include:
+          - os: ubuntu-22.04
+            cmp: gcc-12
+            name: "Ub-22 gcc-12 c++20 hardened"
+            extra: "CMD_CXXFLAGS=-std=c++20
+                    CMD_CPPFLAGS='-fdiagnostics-color
+                                  -fstack-protector-strong
+                                  -Wformat
+                                  -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=3'
+                    CMD_LDFLAGS=-Wl,-z,relro"
+
           - os: ubuntu-20.04
             cmp: gcc
             configuration: default
-            wine: "64"
-            name: "Ub-20 gcc-9 + MinGW"
+            cross: "windows-x64-mingw"
+            name: "Ub-20 gcc + MinGW"
 
           - os: ubuntu-20.04
             cmp: gcc
             configuration: static
-            wine: "64"
-            name: "Ub-20 gcc-9 + MinGW, static"
+            cross: "windows-x64-mingw"
+            name: "Ub-20 gcc + MinGW, static"
 
           - os: ubuntu-20.04
             cmp: gcc
             configuration: static
             extra: "CMD_CXXFLAGS=-std=c++11"
-            name: "Ub-20 gcc-9 C++11, static"
+            name: "Ub-20 gcc C++11, static"
+
+          - os: ubuntu-20.04
+            cmp: gcc
+            configuration: static
+            extra: "CMD_CFLAGS=-funsigned-char CMD_CXXFLAGS=-funsigned-char"
+            name: "Ub-20 gcc unsigned char"
 
           - os: ubuntu-20.04
             cmp: clang
             configuration: default
-            name: "Ub-20 clang-10"
+            name: "Ub-20 clang"
 
           - os: ubuntu-20.04
             cmp: clang
             configuration: default
             extra: "CMD_CXXFLAGS=-std=c++11"
-            name: "Ub-20 clang-10 C++11"
-
-          - os: ubuntu-18.04
-            cmp: gcc
-            configuration: default
-            name: "Ub-18 gcc-7"
-
-          - os: ubuntu-18.04
-            cmp: gcc-8
-            utoolchain: true
-            utoolchain-install: "gcc-8 g++-8"
-            configuration: default
-            name: "Ub-18 gcc-8"
+            name: "Ub-20 clang C++11"
 
           - os: ubuntu-20.04
-            cmp: gcc-8
-            utoolchain: true
-            utoolchain-install: "gcc-8 g++-8"
+            cmp: gcc
             configuration: default
-            name: "Ub-20 gcc-8"
+            cross: "RTEMS-pc686-qemu@5"
+            name: "Ub-20 gcc + RT-5.1 pc686"
+
+          - os: ubuntu-20.04
+            cmp: gcc
+            configuration: default
+            cross: "RTEMS-beatnik@5"
+            test: NO
+            name: "Ub-20 gcc + RT-5.1 beatnik"
+
+          - os: ubuntu-20.04
+            cmp: gcc
+            configuration: default
+            cross: "RTEMS-xilinx_zynq_a9_qemu@5"
+            test: NO
+            name: "Ub-20 gcc + RT-5.1 xilinx_zynq_a9_qemu"
+
+          - os: ubuntu-20.04
+            cmp: gcc
+            configuration: default
+            cross: "RTEMS-uC5282@5"
+            test: NO
+            name: "Ub-20 gcc + RT-5.1 uC5282"
+
+          - os: ubuntu-20.04
+            cmp: gcc
+            configuration: default
+            name: "Ub-20 gcc + RT-4.10"
+            cross: "RTEMS-pc386-qemu@4.10"
+            test: NO
+
+          - os: ubuntu-20.04
+            cmp: gcc
+            configuration: default
+            name: "Ub-20 gcc + RT-4.9"
+            cross: "RTEMS-pc386-qemu@4.9"
 
           - os: macos-latest
             cmp: clang
             configuration: default
-            name: "MacOS clang-12"
-
-          - os: windows-2019
-            cmp: gcc
-            configuration: default
-            name: "Win2019 MinGW"
+            name: "MacOS clang"
 
           - os: windows-2019
             cmp: vs2019
-            configuration: default
+            configuration: debug
             name: "Win2019 MSC-19"
+            extra: "CMD_CXXFLAGS=-analysis"
 
           - os: windows-2019
             cmp: vs2019
-            configuration: static
+            configuration: static-debug
             name: "Win2019 MSC-19, static"
+            extra: "CMD_CXXFLAGS=-analysis"
 
           - os: windows-2019
             cmp: vs2019
             configuration: debug
             name: "Win2019 MSC-19, debug"
 
+          - os: windows-2019
+            cmp: gcc
+            configuration: default
+            name: "Win2019 mingw"
+
+          # Linux cross builds
+
+          - os: ubuntu-latest
+            cmp: gcc
+            configuration: default
+            name: "Cross linux-aarch64"
+            cross: linux-aarch64
+
+          - os: ubuntu-latest
+            cmp: gcc
+            configuration: default
+            name: "Cross linux-arm gnueabi"
+            cross: linux-arm@arm-linux-gnueabi
+
+          - os: ubuntu-latest
+            cmp: gcc
+            configuration: default
+            name: "Cross linux-arm gnueabihf"
+            cross: linux-arm@arm-linux-gnueabihf
+
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
       with:
         submodules: true
     - name: Automatic core dumper analysis
@@ -124,13 +183,90 @@ jobs:
         sudo apt-get update
         sudo apt-get -y install qemu-system-x86 g++-mingw-w64-x86-64 gdb
       if: runner.os == 'Linux'
-    - name: "apt-get install ${{ matrix.cmp }}"
+    - name: Prepare and compile dependencies
+      run: python .ci/cue.py prepare
+    - name: Build main module
+      run: python .ci/cue.py build
+    - name: Run main module tests
+      run: python .ci/cue.py -T 60M test
+    - name: Upload tapfiles Artifact
+      if: ${{ always() }}
+      uses: actions/upload-artifact@v4
+      with:
+        name: tapfiles ${{ matrix.name }}
+        path: '**/O.*/*.tap'
+        if-no-files-found: ignore
+    - name: Collect and show test results
+      if: ${{ always() }}
+      run: python .ci/cue.py -T 5M test-results
+
+  docker:
+    name: ${{ matrix.name }}
+    runs-on: ubuntu-latest
+    container:
+      image: ${{ matrix.image }}
+    # Set environment variables from matrix parameters
+    env:
+      CMP: ${{ matrix.cmp }}
+      BCFG: ${{ matrix.configuration }}
+      EXTRA: ${{ matrix.extra }}
+      TEST: ${{ matrix.test }}
+    strategy:
+      fail-fast: false
+      matrix:
+        # Job names also name artifacts, character limitations apply
+        include:
+          #- name: "CentOS-7"
+          #  image: centos:7
+          #  cmp: gcc
+          #  configuration: default
+
+          - name: "Fedora-33"
+            image: fedora:33
+            cmp: gcc
+            configuration: default
+
+          - name: "Fedora-latest"
+            image: fedora:latest
+            cmp: gcc
+            configuration: default
+
+    steps:
+    - name: "Build newer Git"
+      # actions/checkout@v2 wants git >=2.18
+      # centos:7 has 1.8
+      if: matrix.image=='centos:7'
       run: |
-        sudo apt-get -y install software-properties-common
-        sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
-        sudo apt-get update
-        sudo apt-get -y install ${{ matrix.utoolchain-install }}
-      if: matrix.utoolchain
+        yum -y install curl make gcc curl-devel expat-devel gettext-devel openssl-devel zlib-devel perl-ExtUtils-MakeMaker
+        curl https://mirrors.edge.kernel.org/pub/software/scm/git/git-2.29.0.tar.gz | tar -xz
+        cd git-*
+        make -j2 prefix=/usr/local all
+        make prefix=/usr/local install
+        cd ..
+        rm -rf git-*
+        type -a git
+        git --version
+    - name: "Redhat setup"
+      run: |
+        dnfyum() {
+            dnf -y "$@" || yum -y "$@"
+            return $?
+        }
+        dnfyum install python3 gdb make perl gcc-c++ glibc-devel readline-devel ncurses-devel perl-devel perl-Test-Simple
+        git --version || dnfyum install git
+        # rather than just bite the bullet and link python3 -> python,
+        # people would rather just break all existing scripts...
+        [ -e /usr/bin/python ] || ln -sf python3 /usr/bin/python
+        python --version
+    - uses: actions/checkout@v4
+      with:
+        submodules: true
+    - name: Automatic core dumper analysis
+      uses: mdavidsaver/ci-core-dumper@master
+      if: matrix.image!='centos:7'
+    - name: Automatic core dumper analysis
+      uses: mdavidsaver/ci-core-dumper@node16
+      if: matrix.image=='centos:7'
     - name: Prepare and compile dependencies
       run: python .ci/cue.py prepare
     - name: Build main module
