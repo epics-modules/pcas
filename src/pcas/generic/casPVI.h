@@ -16,10 +16,14 @@
 #ifndef casPVIh
 #define casPVIh
 
+#include <epicsVersion.h>
+
 #ifdef epicsExportSharedSymbols
 #   define epicsExportSharedSymbols_casPVIh
 #   undef epicsExportSharedSymbols
 #endif
+
+#include <epicsTypes.h>
 
 // external headers included here
 #include "tsSLList.h"
@@ -77,7 +81,11 @@ public:
     caStatus write ( const casCtx & ctx, const gdd & value );
     caStatus writeNotify ( const casCtx & ctx, const gdd & value );
     casChannel * createChannel ( const casCtx & ctx,
-        const char * const pUserName, const char * const pHostName );
+        const char * const pUserName, const char * const pHostName
+#ifdef EPICS_HAS_AS_IPAG
+        ,epicsUInt32 ip_addr
+#endif
+        );
     aitEnum bestExternalType () const;
     const char * getName () const;
     void casPVDestroyNotify ();
