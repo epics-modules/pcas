@@ -114,7 +114,11 @@ inline void gdd::setStatSevr(aitInt16 stat, aitInt16 sevr)
         { status.s.aitStat = stat; status.s.aitSevr = sevr; }
 
 inline gdd& gdd::operator=(const gdd& v)
+#if __cplusplus >= 201103L
+        = default;
+#else
 	{ memcpy(this,&v,sizeof(gdd)); return *this; }
+#endif
 
 inline int gdd::isScalar(void) const { return dimension()==0?1:0; }
 inline int gdd::isContainer(void) const

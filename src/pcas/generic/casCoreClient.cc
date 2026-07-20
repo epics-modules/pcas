@@ -24,7 +24,6 @@
 casCoreClient::casCoreClient ( caServerI & serverInternal ) :
     eventSys ( *this )
 {
-	assert ( & serverInternal );
 	ctx.setServer ( & serverInternal );
 	ctx.setClient ( this );
 }
