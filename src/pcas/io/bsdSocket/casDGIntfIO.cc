@@ -16,6 +16,8 @@
 // Should I fetch the MTU from the outgoing interface?
 //
 
+#include <epicsVersion.h>
+
 #include "addrList.h"
 #include "errlog.h"
 
@@ -41,7 +43,6 @@ static void  forcePort (ELLLIST *pList, unsigned short port)
     }
 }
 
-
 casDGIntfIO::casDGIntfIO ( caServerI & serverIn, clientBufMemoryManager & memMgr,
     const caNetAddr & addr, bool autoBeaconAddr, bool addConfigBeaconAddr ) :
     casDGClient ( serverIn, memMgr )
@@ -54,6 +55,9 @@ casDGIntfIO::casDGIntfIO ( caServerI & serverIn, clientBufMemoryManager & memMgr
     
     ellInit ( &BCastAddrList );
     ellInit ( &this->beaconAddrList );
+#ifdef EPICS_HAS_CAS_IGNORE_NET_LIST
+    ignoreNets= NULL;
+#endif
     
     if ( ! osiSockAttach () ) {
         throw S_cas_internal;
@@ -188,6 +192,25 @@ casDGIntfIO::casDGIntfIO ( caServerI & serverIn, clientBufMemoryManager & memMgr
             free ( pNode );
         }
     }
+#ifdef EPICS_HAS_CAS_IGNORE_NET_LIST
+    {
+        ELLLIST temp = ELLLIST_INIT;
+        size_t idx = 0;
+        osiSockNetNode *node;
+        networkList ( &temp, &EPICS_CAS_IGNORE_NET_LIST );
+        this->ignoreNets= new network_spec[1+ellCount(&temp)];
+
+        while((node=(osiSockNetNode*)ellGet(&temp))!=NULL)
+        {
+            (this->ignoreNets)[idx].addr= node->net.addr;
+            (this->ignoreNets)[idx].mask= node->net.mask;
+            idx++;
+            free(node);
+        }
+        (this->ignoreNets)[idx].addr= 0;
+        (this->ignoreNets)[idx].mask= 0;
+    }
+#endif
 
     //
     // Solaris specific:
@@ -274,6 +297,11 @@ casDGIntfIO::~casDGIntfIO()
         pEntry->~ipIgnoreEntry ();
         this->ipIgnoreEntryFreeList.release ( pEntry );
     }
+
+#ifdef EPICS_HAS_CAS_IGNORE_NET_LIST
+    if (this->ignoreNets)
+        free(this->ignoreNets);
+#endif
     
     osiSockRelease ();
 }
@@ -352,6 +380,20 @@ casDGIntfIO::osdRecv ( char * pBufIn, bufSizeT size,
                 }
             }
         }
+#ifdef EPICS_HAS_CAS_IGNORE_NET_LIST
+        if ( this->ignoreNets ) {
+            if ( addr.sa_family == AF_INET ) {
+                sockaddr_in * pIP = 
+                    reinterpret_cast < sockaddr_in * > ( & addr );
+                network_spec *spec= this->ignoreNets;
+                for(; spec->addr; spec++) {
+                    if ((pIP->sin_addr.s_addr & spec->mask)==(spec->addr & spec->mask))
+                        return casFillNone;
+                }
+            }
+        }
+#endif
+
         fromOut = addr;
         actualSize = static_cast < bufSizeT > ( status );
         return casFillProgress;

@@ -13,7 +13,10 @@
  *              505 665 1831
  */
 
+#include <epicsVersion.h>
+
 #define epicsExportSharedSymbols
+#include <epicsTypes.h>
 #include "casdef.h"
 #include "casChannelI.h"
 
@@ -47,7 +50,11 @@ casPV * casChannel::getPV ()
 }
 
 void casChannel::setOwner ( const char * const /* pUserName */, 
-	const char * const /* pHostName */ )
+	                    const char * const /* pHostName */
+#ifdef EPICS_HAS_AS_IPAG
+	                    ,epicsUInt32 ip_addr
+#endif
+                          )
 {
 	//
 	// NOOP

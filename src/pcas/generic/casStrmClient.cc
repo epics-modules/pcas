@@ -14,6 +14,8 @@
 // *must* be defined before including net_convert.h
 typedef unsigned long arrayElementCount;
 
+#include <epicsVersion.h>
+
 #include "osiWireFormat.h"
 #include "net_convert.h"    // byte order conversion from libca
 #include "dbMapper.h"       // ait to dbr types
@@ -78,6 +80,9 @@ casStrmClient::casStrmClient (
     _clientAddr ( clientAddr ),
     pUserName ( 0 ),
     pHostName ( 0 ),
+#ifdef EPICS_HAS_AS_IPAG
+    ip_addr ( clientAddr.getSockIP().sin_addr.s_addr ),
+#endif
     incommingBytesToDrain ( 0 ),
     pendingResponseStatus ( S_cas_success ),
     minor_version_number ( 0 ),
@@ -1739,8 +1744,16 @@ caStatus casStrmClient::createChanResponse (
     //
     // create server tool XXX derived from casChannel
     //
+    // Note; pUserName, pHostName and ip_addr probably still have their default
+    // values, when this is called:
     casChannel * pChan = pvar.getPV()->pPVI->createChannel ( 
-        ctxIn, this->pUserName, this->pHostName );
+        ctxIn, this->pUserName, this->pHostName
+#ifdef EPICS_HAS_AS_IPAG
+        ,this->ip_addr
+#endif
+        );
+
+
     if ( ! pChan ) {
         pvar.getPV()->pPVI->deleteSignal();
         return this->channelCreateFailedResp ( 
