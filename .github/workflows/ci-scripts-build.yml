@@ -55,11 +55,15 @@ jobs:
                                   -Wno-error=deprecated-declarations
                                   -Wno-error=stringop-truncation
                                   -Wno-error=restrict
+                                  -Wno-error=class-memaccess
+                                  -Wno-error=mismatched-new-delete
                                   -Wno-error=sizeof-pointer-memaccess
                                   -Wno-error=nonnull
+                                  -Wno-error=nonnull-compare
                                   -Wno-error=dangling-pointer
                                   -Wno-error=format-overflow
                                   -Wno-error=stringop-overread
+                                  -Wno-error=terminate
                                   -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=3'
                     CMD_LDFLAGS=-Wl,-z,relro"
 
@@ -186,7 +190,7 @@ jobs:
             cross: linux-arm@arm-linux-gnueabihf
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
       with:
         submodules: true
     - name: Automatic core dumper analysis
@@ -204,7 +208,7 @@ jobs:
       run: python .ci/cue.py -T 60M test
     - name: Upload tapfiles Artifact
       if: ${{ always() }}
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: tapfiles ${{ matrix.name }}
         path: '**/O.*/*.tap'
@@ -262,7 +266,7 @@ jobs:
         dnf -y install python3 gdb make perl gcc-c++ glibc-devel readline-devel ncurses-devel perl-devel perl-Test-Simple
         git --version || dnf -y install git
         python3 --version
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
       with:
         submodules: true
     - name: Automatic core dumper analysis
@@ -275,7 +279,7 @@ jobs:
       run: python3 .ci/cue.py -T 20M test
     - name: Upload tapfiles Artifact
       if: ${{ always() }}
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: tapfiles ${{ matrix.name }}
         path: '**/O.*/*.tap'
@@ -292,10 +296,10 @@ jobs:
       BCFG: default
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
       with:
         submodules: true
-    
+
     - name: Run...
       run: |
         env > env.list
@@ -313,7 +317,7 @@ jobs:
           curl make gcc curl-devel expat-devel gettext-devel openssl-devel zlib-devel perl-ExtUtils-MakeMaker \
           python3 gdb make perl gcc-c++ glibc-devel readline-devel ncurses-devel perl-devel perl-Test-Simple \
           libevent-devel sudo re2c perl-version
-        [ -e /usr/bin/python ] || ln -sf /usr/bin/python3 /usr/bin/python
+        rm -f /usr/bin/python && ln -sf /usr/bin/python3 /usr/bin/python
 
         # fake out cue.py
         ln -s /bin/true /usr/bin/apt-get
@@ -329,7 +333,6 @@ jobs:
         EOF
         chmod +x runit.sh
         docker run --rm --quiet \
-          --pull=always \
           --env-file env.list \
           -v `pwd`:/io \
           centos:7 \
