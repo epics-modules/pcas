@@ -662,8 +662,25 @@ caStatus casDGClient::processDG ()
             }
         }
 
-        if ( status != S_cas_success ) {
+        if ( status == S_cas_sendBlocked ) {
             break;
+        }
+
+        if ( status != S_cas_success ) {
+            //
+            // A bad request only spoils its own datagram. Report it
+            // and continue with the next datagram. Stopping here would
+            // leave the following datagrams in the input buffer. If the
+            // buffer then looks full, casDGIntfOS::recvCB() disarms the
+            // UDP receive registration, and with no output pending
+            // nothing ever arms it again: the server silently stops
+            // answering search requests.
+            //
+            char pHostName[64u];
+            this->hostName ( pHostName, sizeof ( pHostName ) );
+            errPrintf ( status, __FILE__, __LINE__,
+                "unexpected problem with UDP input from \"%%s\"", pHostName );
+            status = S_cas_success;
         }
 
         if ( this->in.bytesPresent () > 0 && dgInBytesConsumed == 0 ) {
