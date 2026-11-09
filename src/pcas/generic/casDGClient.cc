@@ -662,8 +662,16 @@ caStatus casDGClient::processDG ()
             }
         }
 
-        if ( status != S_cas_success ) {
+        if ( status == S_cas_sendBlocked ) {
             break;
+        }
+
+        if ( status != S_cas_success ) {
+            char pHostName[64u];
+            this->hostName ( pHostName, sizeof ( pHostName ) );
+            errPrintf ( status, __FILE__, __LINE__,
+                "Bad UDP message from client \"%s\"", pHostName );
+            status = S_cas_success;
         }
 
         if ( this->in.bytesPresent () > 0 && dgInBytesConsumed == 0 ) {
